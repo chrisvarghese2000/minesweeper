@@ -15,11 +15,15 @@ import com.example.minesweeper.view.grid.Cell;
 public class GameEngine {
     private static GameEngine instance;
 
-    public static final int WIDTH = 13;
-    public static final int HEIGHT = 20;
-    public static final int NUM_MINES = 30;
+    public static final int WIDTH = 10;
+    public static final int HEIGHT = 12;
+    public static final int NUM_MINES = 1;
     private Context context;
     private Cell[][] game = new Cell[WIDTH][HEIGHT];
+    private String gameState;
+    private static final String PLAYING = "P";
+    private static final String LOST = "L";
+    private static final String WON = "W";
 
     private GameEngine() {
         //cannot call constructor for this class :(
@@ -38,6 +42,7 @@ public class GameEngine {
         int[][] gridAsArray = GridMaker.getGrid(HEIGHT, WIDTH, NUM_MINES);
         PrintGridLogCat.print(gridAsArray);
         setGame(context, gridAsArray);
+        gameState = PLAYING;
     }
 
     private void setGame(Context context, int[][] grid) {
@@ -72,15 +77,19 @@ public class GameEngine {
     }
 
     public void click(int x, int y) {
-        if (game[x][y].getValue() == -1) {
-            //game[x][y].explode();
-            gameLost();
-            return;
+        if (!gameState.equals(PLAYING)) {
+            reset();
+        } else {
+            if (game[x][y].getValue() == -1) {
+                //game[x][y].explode();
+                gameLost();
+                return;
+            }
+            checkEmpty(x, y);
+            game[x][y].search();
+            checkAround(x, y);
+            checkForWin();
         }
-        checkEmpty(x, y);
-        game[x][y].search();
-        checkAround(x, y);
-        checkForWin();
     }
 
     private void checkAround(int x, int y) {
@@ -130,7 +139,8 @@ public class GameEngine {
                 }
             }
         }
-        reset();
+        gameState = LOST;
+        //reset();
     }
 
     public void checkForWin() {
@@ -142,10 +152,14 @@ public class GameEngine {
             }
         }
         Toast.makeText(context, "Game Won", Toast.LENGTH_SHORT).show();
+        //reset();
+        gameState = WON;
     }
 
     public void reset() {
-        instance = null;
-        GameEngine.getInstance();
+        int[][] gridAsArray = GridMaker.getGrid(HEIGHT, WIDTH, NUM_MINES);
+        PrintGridLogCat.print(gridAsArray);
+        setGame(context, gridAsArray);
+        gameState = PLAYING;
     }
 }
