@@ -20,10 +20,10 @@ public class GameEngine {
     public static final int NUM_MINES = 1;
     private Context context;
     private Cell[][] game = new Cell[WIDTH][HEIGHT];
-    private String gameState;
-    private static final String PLAYING = "P";
-    private static final String LOST = "L";
-    private static final String WON = "W";
+    public String gameState;
+    public static final String PLAYING = "P";
+    public static final String LOST = "L";
+    public static final String WON = "W";
 
     private GameEngine() {
         //cannot call constructor for this class :(
